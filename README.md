@@ -172,25 +172,11 @@ See [DOCKER.md](DOCKER.md) for complete Docker deployment instructions.
 4. Set environment variables for secrets
 5. Run: `dotnet IO.Swagger.dll`
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
-
 ## License
 
 This project is licensed under the MIT License.
 
 ## Documentation
 
-- [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture and design
 - [DOCKER.md](DOCKER.md) - Docker setup and deployment
 - [IO.Swagger.Tests/UT.md](IO.Swagger.Tests/UT.md) - Test documentation
-
-## Support
-
-For issues, questions, or contributions, please open an issue on the repository.
