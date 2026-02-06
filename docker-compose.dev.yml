@@ -1,0 +1,83 @@
+version: '3.8'
+
+name: "calculator-dev"
+services:
+  # MongoDB for development
+  mongo-dev:
+    image: mongo:7.0
+    container_name: calculator-mongo-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: calculator_dev
+    volumes:
+      - mongo-data-dev:/data/db
+    networks:
+      - calculator-network-dev
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for development
+  redis-dev:
+    image: redis:7-alpine
+    container_name: calculator-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data-dev:/data
+    networks:
+      - calculator-network-dev
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Calculator API for development
+  api-dev:
+    build:
+      context: .
+      dockerfile: src/IO.Swagger/Dockerfile
+      target: development
+    container_name: calculator-api-dev
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+      Jwt__Issuer: CalculatorApi
+      Jwt__Audience: CalculatorApiClients
+      Jwt__SigningKey: 94517c4ad9aea8de84c25036e2c0428ea32228553707e5e886a70839e807f12c
+      Jwt__ExpirationMinutes: 30
+      Mongo__ConnectionString: mongodb://mongo-dev:27017
+      Mongo__DatabaseName: calculator_dev
+      Mongo__UsersCollection: users
+      Redis__ConnectionString: redis-dev:6379
+      Redis__InstancePrefix: "calcapi:dev:"
+    depends_on:
+      mongo-dev:
+        condition: service_healthy
+      redis-dev:
+        condition: service_healthy
+    networks:
+      - calculator-network-dev
+    volumes:
+      - ./src/IO.Swagger:/app
+      - /app/bin
+      - /app/obj
+
+volumes:
+  mongo-data-dev:
+    driver: local
+  redis-data-dev:
+    driver: local
+
+networks:
+  calculator-network-dev:
+    driver: bridge

@@ -1,0 +1,113 @@
+version: '3.8'
+
+name: "calculator-prod"
+services:
+  # Generate JWT signing key
+  keygen-prod:
+    image: alpine:3.19
+    container_name: calculator-keygen-prod
+    command: >
+      sh -c " if [ ! -f /keys/jwt.key ]; then
+        mkdir -p /keys &&
+        head -c 32 /dev/urandom | xxd -p -c 32 > /keys/jwt.key &&
+        echo 'JWT key generated successfully';
+      else
+        echo 'JWT key already exists';
+      fi "
+    volumes:
+      - jwt-keys:/keys
+    restart: "no"
+    networks:
+      - calculator-network
+
+  # MongoDB for production
+  mongo-prod:
+    image: mongo:7.0
+    container_name: calculator-mongo-prod
+    restart: unless-stopped
+    ports:
+      - "27018:27018"
+    environment:
+      MONGO_INITDB_DATABASE: calculator_prod
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    networks:
+      - calculator-network
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for production
+  redis-prod:
+    image: redis:7-alpine
+    container_name: calculator-redis-prod
+    restart: unless-stopped
+    command: redis-server --requirepass admin
+    ports:
+      - "6380:6380"
+    volumes:
+      - redis-data:/data
+    networks:
+      - calculator-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--pass", "admin", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Calculator API for production
+  api-prod:
+    build:
+      context: .
+      dockerfile: src/IO.Swagger/Dockerfile
+      target: production
+    container_name: calculator-api-prod
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5001
+      # JWT Configuration (loaded from generated key)
+      - Jwt__Issuer=CalculatorApi
+      - Jwt__Audience=CalculatorApiClients
+      - Jwt__ExpirationMinutes=30
+      # MongoDB Configuration
+      - Mongo__ConnectionString=mongodb://admin:admin@mongo-prod:27017
+      - Mongo__DatabaseName=calculator_prod
+      - Mongo__UsersCollection=users
+      # Redis Configuration
+      - "Redis__ConnectionString=redis-prod:6379,password=admin"
+      - "Redis__InstancePrefix=calcapi:prod:"
+    depends_on:
+      keygen-prod:
+        condition: service_completed_successfully
+      mongo-prod:
+        condition: service_healthy
+      redis-prod:
+        condition: service_healthy
+    networks:
+      - calculator-network
+    volumes:
+      - jwt-keys:/keys:ro
+    entrypoint: >
+      sh -c " export Jwt__SigningKey=$$(cat /keys/jwt.key | tr -d '\n\r') && dotnet IO.Swagger.dll "
+
+volumes:
+  jwt-keys:
+    driver: local
+  mongo-data:
+    driver: local
+  mongo-config:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  calculator-network:
+    driver: bridge

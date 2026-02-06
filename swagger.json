@@ -1,0 +1,587 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Calculator API",
+    "description": "Calculator API (ASP.NET Core 8.0)",
+    "contact": {
+      "name": "API Support",
+      "url": "https://github.com/tamir303",
+      "email": ""
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/v1"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "AuthenticationApi"
+        ],
+        "summary": "Authenticate user and obtain JWT token",
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.LoginRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.LoginRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.LoginRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.LoginRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.LoginRequest"
+              }
+            },
+            "text/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.LoginRequest"
+              }
+            },
+            "application/*+xml": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication successful",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.LoginResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.LoginResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.LoginResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.LoginResponse"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - Username already taken",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calculate": {
+      "post": {
+        "tags": [
+          "CalculationsApi"
+        ],
+        "summary": "Perform an arithmetic operation (Authorized)",
+        "description": "Performs mathematical operations. Requires a valid JWT.",
+        "parameters": [
+          {
+            "name": "X-Operation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/IO.Swagger.Common.OperationType"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "text/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "application/*+xml": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.CalculationResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.CalculationResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.CalculationResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.CalculationResponse"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.CalculationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or division by zero",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid JWT token",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dev/calculate": {
+      "post": {
+        "tags": [
+          "DevelopmentOnlyApi"
+        ],
+        "summary": "Perform an arithmetic operation (Unsecured)",
+        "description": "**DEVELOPMENT ONLY.** Identical to `/calculate` but does NOT require a JWT token for authorization.",
+        "parameters": [
+          {
+            "name": "X-Operation",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/IO.Swagger.Common.OperationType"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "",
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "text/xml": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            },
+            "application/*+xml": {
+              "schema": {
+                "$ref": "#/components/schemas/IO.Swagger.Models.CalculationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.CalculationResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.CalculationResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.CalculationResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.CalculationResponse"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.CalculationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or division by zero",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/IO.Swagger.Models.Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "IO.Swagger.Common.OperationType": {
+        "enum": [
+          "add",
+          "subtract",
+          "multiply",
+          "divide"
+        ],
+        "type": "string",
+        "description": "Represents the supported mathematical operations"
+      },
+      "IO.Swagger.Models.CalculationRequest": {
+        "required": [
+          "number1",
+          "number2"
+        ],
+        "type": "object",
+        "properties": {
+          "number1": {
+            "type": "number",
+            "description": "Gets or Sets Number1",
+            "format": "double"
+          },
+          "number2": {
+            "type": "number",
+            "description": "Gets or Sets Number2",
+            "format": "double"
+          }
+        },
+        "additionalProperties": false,
+        "description": ""
+      },
+      "IO.Swagger.Models.CalculationResponse": {
+        "required": [
+          "operation",
+          "result",
+          "timestamp"
+        ],
+        "type": "object",
+        "properties": {
+          "result": {
+            "type": "number",
+            "description": "Gets or Sets Result",
+            "format": "double"
+          },
+          "operation": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Gets or Sets Operation"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Gets or Sets Timestamp",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": ""
+      },
+      "IO.Swagger.Models.Error": {
+        "required": [
+          "error",
+          "message",
+          "timestamp"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Gets or Sets _Error"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Gets or Sets Message"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "Gets or Sets Timestamp",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": ""
+      },
+      "IO.Swagger.Models.LoginRequest": {
+        "required": [
+          "password",
+          "username"
+        ],
+        "type": "object",
+        "properties": {
+          "username": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Gets or Sets Username"
+          },
+          "password": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Gets or Sets Password"
+          }
+        },
+        "additionalProperties": false,
+        "description": ""
+      },
+      "IO.Swagger.Models.LoginResponse": {
+        "required": [
+          "expiresIn",
+          "token",
+          "tokenType"
+        ],
+        "type": "object",
+        "properties": {
+          "token": {
+            "minLength": 1,
+            "type": "string",
+            "description": "Gets or Sets Token"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "description": "Gets or Sets ExpiresIn",
+            "format": "int32"
+          },
+          "tokenType": {
+            "$ref": "#/components/schemas/IO.Swagger.Models.LoginResponse.TokenTypeEnum"
+          }
+        },
+        "additionalProperties": false,
+        "description": ""
+      },
+      "IO.Swagger.Models.LoginResponse.TokenTypeEnum": {
+        "enum": [
+          "Bearer"
+        ],
+        "type": "string",
+        "description": "Gets or Sets TokenType"
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}

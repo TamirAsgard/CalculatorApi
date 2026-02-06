@@ -1,0 +1,324 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "Calculator API",
+    "description" : "A REST API for performing arithmetic operations.\n",
+    "contact" : {
+      "name" : "API Support",
+      "url" : "https://github.com/tamir303"
+    },
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "https://localhost:5001/v1",
+    "description" : "Production API"
+  }, {
+    "url" : "http://localhost:5000/v1",
+    "description" : "Development API"
+  } ],
+  "tags" : [ {
+    "name" : "Authentication",
+    "description" : "User authentication endpoints"
+  }, {
+    "name" : "Calculations",
+    "description" : "Arithmetic operation endpoints"
+  }, {
+    "name" : "Development Only",
+    "description" : "Unsecured endpoints for development/testing only"
+  } ],
+  "paths" : {
+    "/auth/login" : {
+      "post" : {
+        "tags" : [ "Authentication" ],
+        "summary" : "Authenticate user and obtain JWT token",
+        "operationId" : "login",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Authentication successful",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Invalid credentials",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409" : {
+            "description" : "Conflict - Username already taken",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                },
+                "example" : {
+                  "error" : "Conflict",
+                  "message" : "The username 'demo' is already taken.",
+                  "timestamp" : "2026-02-06T10:30:00Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calculate" : {
+      "post" : {
+        "tags" : [ "Calculations" ],
+        "summary" : "Perform an arithmetic operation (Authorized)",
+        "description" : "Performs mathematical operations. Requires a valid JWT.",
+        "operationId" : "performCalculation",
+        "parameters" : [ {
+          "name" : "X-Operation",
+          "in" : "header",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "add", "subtract", "multiply", "divide" ]
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CalculationRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CalculationResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input or division by zero",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Missing or invalid JWT token",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "BearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/dev/calculate" : {
+      "post" : {
+        "tags" : [ "Development Only" ],
+        "summary" : "Perform an arithmetic operation (Unsecured)",
+        "description" : "**DEVELOPMENT ONLY.** Identical to `/calculate` but does NOT require a JWT token for authorization.\n",
+        "operationId" : "devPerformCalculation",
+        "parameters" : [ {
+          "name" : "X-Operation",
+          "in" : "header",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "add", "subtract", "multiply", "divide" ]
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CalculationRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CalculationResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid input or division by zero",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "LoginRequest" : {
+        "required" : [ "password", "username" ],
+        "type" : "object",
+        "properties" : {
+          "username" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string",
+            "format" : "password"
+          }
+        }
+      },
+      "LoginResponse" : {
+        "required" : [ "expiresIn", "token", "tokenType" ],
+        "type" : "object",
+        "properties" : {
+          "token" : {
+            "type" : "string"
+          },
+          "expiresIn" : {
+            "type" : "integer"
+          },
+          "tokenType" : {
+            "type" : "string",
+            "enum" : [ "Bearer" ]
+          }
+        },
+        "example" : {
+          "expiresIn" : 0,
+          "tokenType" : "Bearer",
+          "token" : "token"
+        }
+      },
+      "CalculationRequest" : {
+        "required" : [ "number1", "number2" ],
+        "type" : "object",
+        "properties" : {
+          "number1" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "number2" : {
+            "type" : "number",
+            "format" : "double"
+          }
+        }
+      },
+      "CalculationResponse" : {
+        "required" : [ "operation", "result", "timestamp" ],
+        "type" : "object",
+        "properties" : {
+          "result" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "operation" : {
+            "type" : "string"
+          },
+          "timestamp" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        },
+        "example" : {
+          "result" : 0.8008281904610115,
+          "operation" : "operation",
+          "timestamp" : "2000-01-23T04:56:07.000+00:00"
+        }
+      },
+      "Error" : {
+        "required" : [ "error", "message", "timestamp" ],
+        "type" : "object",
+        "properties" : {
+          "error" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "timestamp" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      }
+    },
+    "responses" : {
+      "BadRequest" : {
+        "description" : "Invalid input or division by zero",
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unauthorized" : {
+        "description" : "Missing or invalid JWT token",
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "BearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
+      }
+    }
+  }
+}
