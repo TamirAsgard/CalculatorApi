@@ -57,7 +57,6 @@ public class CalculationsApiTests : IClassFixture<CustomWebApplicationFactory>, 
     [InlineData("add", 5.0, 3.0, 8.0)]
     [InlineData("subtract", 10.0, 4.0, 6.0)]
     [InlineData("multiply", 6.0, 7.0, 42.0)]
-    [InlineData("multiply", 6.0, 7.0, 42.0)]
     [InlineData("divide", 20.0, 4.0, 5.0)]
     [InlineData("Add", 1.0, 1.0, 2.0)]
     [InlineData("ADD", 2.0, 2.0, 4.0)]

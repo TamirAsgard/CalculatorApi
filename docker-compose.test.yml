@@ -1,0 +1,64 @@
+version: '3.8'
+
+name: "calculator-test"
+services:
+  # MongoDB for testing
+  mongo-test:
+    image: mongo:7.0
+    container_name: calculator-mongo-test
+    restart: "no"
+    ports:
+      - "27019:27017" # Different port to avoid conflict with dev/prod
+    environment:
+      MONGO_INITDB_DATABASE: calculator_test_db
+    volumes:
+      - mongo-test-data:/data/db
+    networks:
+      - calculator-test-network
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for testing
+  redis-test:
+    image: redis:7-alpine
+    container_name: calculator-redis-test
+    restart: "no"
+    ports:
+      - "6381:6379" # Different port to avoid conflict
+    networks:
+      - calculator-test-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Test runner
+  tests:
+    build:
+      context: .
+      dockerfile: IO.Swagger.Tests/Dockerfile.test
+    container_name: calculator-tests-runner
+    depends_on:
+      mongo-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Test
+      # Override appsettings.Test.json with docker service names
+      - Mongo__ConnectionString=mongodb://mongo-test:27017
+      - Redis__ConnectionString=redis-test:6379
+    networks:
+      - calculator-test-network
+
+volumes:
+  mongo-test-data:
+    driver: local
+
+networks:
+  calculator-test-network:
+    driver: bridge

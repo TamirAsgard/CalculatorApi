@@ -57,9 +57,10 @@ dotnet run --project src/IO.Swagger
   - Header: `X-Operation: add|subtract|multiply|divide`
   - Body: `{ "number1": 5.0, "number2": 3.0 }`
 
-### Development Only
-- `GET /v1/dev/health` - Health check
-- `GET /v1/dev/config` - Configuration status
+### Development Only (No auth needed)
+- `POST /v1/dev/calculate` - Perform calculation
+  - Header: `X-Operation: add|subtract|multiply|divide`
+  - Body: `{ "number1": 5.0, "number2": 3.0 }`
 
 ## Architecture
 
@@ -97,9 +98,14 @@ Configuration is managed through `appsettings.json` and environment variables:
 
 ## Testing
 
-**Run all tests:**
+**Run all tests (Local):**
 ```bash
 dotnet test
+```
+
+**Run all tests (Docker):**
+```bash
+docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit
 ```
 
 **Test Coverage:**

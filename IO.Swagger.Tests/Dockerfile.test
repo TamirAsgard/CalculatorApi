@@ -1,0 +1,18 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS test-runner
+WORKDIR /app
+
+# Copy csproj and restore dependencies
+COPY src/IO.Swagger/*.csproj ./src/IO.Swagger/
+COPY IO.Swagger.Tests/*.csproj ./IO.Swagger.Tests/
+RUN dotnet restore ./IO.Swagger.Tests/IO.Swagger.Tests.csproj
+
+# Copy everything else
+COPY src/IO.Swagger/ ./src/IO.Swagger/
+COPY IO.Swagger.Tests/ ./IO.Swagger.Tests/
+
+# Build tests
+RUN dotnet build ./IO.Swagger.Tests/IO.Swagger.Tests.csproj -c Debug
+
+# Run tests
+WORKDIR /app/IO.Swagger.Tests
+ENTRYPOINT ["dotnet", "test", "--logger:console;verbosity=detailed"]

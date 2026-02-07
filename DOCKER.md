@@ -31,6 +31,30 @@ Development uses hardcoded configuration:
 - MongoDB Database: `calculator_dev`
 - Redis Prefix: `calcapi:dev:`
 
+## Test Environment
+
+### Quick Start
+
+```bash
+# Run tests in isolated environment
+docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit
+
+# Clean up test environment
+docker-compose -f docker-compose.test.yml down -v
+```
+
+### Features
+
+- **Isolated Infrastructure**: Dedicated MongoDB and Redis instances for testing
+- **Configuration**: Uses `appsettings.Test.json` configuration
+- **Network Isolation**: Runs on a separate `calculator-test-network`
+- **Automatic Cleanup**: Tests run and containers exit automatically
+
+### Services
+
+- **MongoDB Test**: localhost:27019 (mapped to container 27017)
+- **Redis Test**: localhost:6381 (mapped to container 6379)
+
 ## Production Environment
 
 ### Setup
